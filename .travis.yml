@@ -37,6 +37,7 @@ jobs:
       - pip install xlrd 
       - pipenv install pandas ##
       - pip install torch
+      - pip install torchvision
       script:
       # Before running, get the data from s3 using the secret
       # credentials entered at https://travis-ci.com/csci-e-29/YOUR_PSET_REPO_NAME/settings
