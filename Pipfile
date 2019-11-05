@@ -23,6 +23,7 @@ torchvision ="==0.4.1"
 [requires]
 python_version = "3.7"
 
-#[packages.csci-utils]
-#git = "https://github.com/csci-e-29/2019fa-csci-utils-GabrielBG010"
-#editable = true
+
+[packages]
+csci-utils = {extras = ["all"], editable = true,git = "https://github.com/GabrielBG010/2019fa-csci-utils-GabrielBG010"}
+
