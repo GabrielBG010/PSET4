@@ -4,62 +4,63 @@
 """Tests for `pset_4` package."""
 
 import os
-import tempfile
-from tempfile import TemporaryDirectory
 from unittest import TestCase
 
-from pset_4.hash_str import hash_str
-from pset_4.io import atomic_write
+import boto3
+from luigi import LuigiStatusCode, build
+from moto import mock_s3
+
+from pset_4.tasks.data import ContentImage, SavedModel, DownloadImage, DownloadModel
+from pset_4.tasks.stylize import Stylize
 
 
-class FakeFileFailure(IOError):
-    pass
+def assert_and_delete(filepath):
+    if os.path.exists(filepath):
+        os.path.os.remove(filepath)
+        return True
+    else:
+        return False
 
 
-class HashTests(TestCase):
-    def test_basic(self):
-        self.assertEqual(hash_str("world!", salt="hello, ")
-                         .hex()[:6], "68e656")
+@mock_s3
+class TestS3(TestCase):
+    conn = None
 
+    def setUp(self):
+        self.conn = boto3.resource('s3', region_name='us-east-1')
+        self.conn.create_bucket(Bucket='pset4-gabrielbg010')
+        tmpluigi = os.path.join(os.path.curdir, "test/test_files/test_luigi.jpg")
+        tmpmodel = os.path.join(os.path.curdir, "test/test_files/test_rain_princess.pth")
+        s3 = boto3.client('s3')
+        s3.upload_file(tmpluigi, 'pset4-gabrielbg010', "pset4/images/luigi.jpg")
+        s3.upload_file(tmpmodel, 'pset4-gabrielbg010', "pset4/saved_models/rain_princess.pth")
 
-class AtomicWriteTests(TestCase):
-    def test_atomic_write(self):
-        """Ensure file exists after being written successfully"""
+    def test_ContentImage(self):
+        self.assertEqual(build([ContentImage(image="luigi.jpg")], local_scheduler=True,
+                               detailed_summary=True).status, LuigiStatusCode.SUCCESS)
 
-        with TemporaryDirectory() as tmp:
-            fp = os.path.join(tmp, "asdf.txt")
-            with atomic_write(fp, "w") as f:
-                assert not os.path.exists(fp)
-                tmpfile = f.name
-                f.write("asdf")
-            assert not os.path.exists(tmpfile)
-            assert os.path.exists(fp)
+    def test_SavedModel(self):
+        self.assertEqual(build([SavedModel(model="rain_princess.pth")], local_scheduler=True,
+                               detailed_summary=True).status, LuigiStatusCode.SUCCESS)
 
-            with open(fp) as f:
-                self.assertEqual(f.read(), "asdf")
+    def test_DownloadImage(self):
+        image = "luigi.jpg"
+        self.assertEqual(build([DownloadImage(image=image)], local_scheduler=True,
+                               detailed_summary=True).status, LuigiStatusCode.SUCCESS)
+        assert assert_and_delete(os.path.join("images", image))
 
-    def test_atomic_failure(self):
-        """Ensure that file does not exist after failure during write"""
+    def test_DownloadModel(self):
+        model = "rain_princess.pth"
+        self.assertEqual(build([DownloadModel(model=model)], local_scheduler=True,
+                               detailed_summary=True).status, LuigiStatusCode.SUCCESS)
+        assert assert_and_delete(os.path.join("saved_models", model))
 
-        with TemporaryDirectory() as tmp:
-            fp = os.path.join(tmp, "asdf.txt")
-
-            with self.assertRaises(FakeFileFailure):
-                with atomic_write(fp, "w") as f:
-                    tmpfile = f.name
-                    assert os.path.exists(tmpfile)
-                    raise FakeFileFailure()
-            assert not os.path.exists(tmpfile)
-            assert not os.path.exists(fp)
-
-    def test_file_exists(self):
-        """Ensure an error is raised when a file exists"""
-        with self.assertRaises(FileExistsError):
-            temporary_file = tempfile.NamedTemporaryFile(delete=False)
-            temporary_file_name = temporary_file.name
-            temporary_file.close()
-            with atomic_write(temporary_file_name, "w") as f:
-                pass
-                if f:
-                    pass
-            os.unlink(temporary_file_name)
+    def test_Stylize(self):
+        image = "luigi.jpg"
+        model = "rain_princess.pth"
+        image_out = "luigiout.jpg"
+        self.assertEqual(build([Stylize(image=image, model=model)], local_scheduler=True,
+                               detailed_summary=True).status, LuigiStatusCode.SUCCESS)
+        assert assert_and_delete(os.path.join("images", image))
+        assert assert_and_delete(os.path.join("saved_models", model))
+        assert assert_and_delete(os.path.join("images_out", image_out))
