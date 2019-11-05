@@ -21,9 +21,7 @@ jobs:
       
       install:
         - pipenv install --dev --ignore-pipfile --deploy
-        - pipenv uninstall contextlib 
         - pipenv lock --clear
-        - pip install xlrd 
         - pipenv install pandas ##
         - pip install torch
         - pip install torchvision
@@ -40,7 +38,6 @@ jobs:
       install: 
       - pipenv uninstall contextlib 
       - pipenv lock --clear
-      - pip install xlrd 
       - pipenv install pandas ##
       - pip install torch
       - pip install torchvision
