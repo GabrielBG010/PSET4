@@ -3,7 +3,6 @@ import argparse
 
 import luigi
 
-from pset_4.hash_str import get_csci_salt, hash_str
 from pset_4.tasks.stylize import Stylize
 
 
