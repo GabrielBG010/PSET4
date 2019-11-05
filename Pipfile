@@ -16,6 +16,7 @@ luigi = "*"
 boto3 = "*"
 onnx = "*"
 onnx-caffe2 = "*"
+moto = "*"
 
 [requires]
 python_version = "3.7"
