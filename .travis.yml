@@ -18,16 +18,22 @@ stages:
 jobs:
   include:
     - stage: test
-      script: pytest -v
+      
       install:
         - pipenv install --dev --ignore-pipfile --deploy
+        - pipenv uninstall contextlib 
+        - pipenv lock --clear
+        - pip install xlrd 
+        - pipenv install pandas ##
+        - pip install torch
+        - pip install torchvision
         
       before_script: # code coverage tool
          - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
          - chmod +x ./cc-test-reporter
          - ./cc-test-reporter before-build
+      script: pytest -v
       script: pytest --cov-report xml --cov-report term
-
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
     - stage: answers
