@@ -7,12 +7,6 @@ from pset_4.hash_str import get_csci_salt, hash_str
 from pset_4.tasks.stylize import Stylize
 
 
-def get_user_hash(username, salt=None):
-    salt = salt or get_csci_salt()
-    return hash_str(username, salt=salt)
-
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument("-i", "--image", default='luigi.jpg' , action="store_true")
