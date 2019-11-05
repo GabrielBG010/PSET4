@@ -5,6 +5,7 @@ import luigi
 
 from pset_4.cli import main
 
+from pset_4.tasks.stylize import Stylize
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
