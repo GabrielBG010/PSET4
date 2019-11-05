@@ -22,9 +22,7 @@ jobs:
       install:
         - pipenv install --dev --ignore-pipfile --deploy
         - pipenv lock --clear
-        - pipenv install pandas ##
-        - pip install torch
-        - pip install torchvision
+        - pipenv install pandas 
         
       before_script: # code coverage tool
          - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -36,11 +34,8 @@ jobs:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
     - stage: answers
       install: 
-      - pipenv uninstall contextlib 
       - pipenv lock --clear
-      - pipenv install pandas ##
-      - pip install torch
-      - pip install torchvision
+      - pipenv install pandas 
       script:
       # Before running, get the data from s3 using the secret
       # credentials entered at https://travis-ci.com/csci-e-29/YOUR_PSET_REPO_NAME/settings
