@@ -16,11 +16,20 @@ Why does this file exist, and why not put this in __main__?
 """
 import argparse
 
-parser = argparse.ArgumentParser(description='Command description.')
-parser.add_argument('names', metavar='NAME', nargs=argparse.ZERO_OR_MORE,
-                    help="A name of something.")
+import luigi
 
+from pset_4.tasks.stylize import Stylize
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument("-i", "--image", default='luigi.jpg' , action="store_true")
+    parser.add_argument("-m", "--model", default='rain_princess.pth')
+    args = parser.parse_args()
 
 def main(args=None):
-    args = parser.parse_args(args=args)
-    print(args.names)
+    luigi.build([
+        # ContentImage(image='luigi.jpg'),
+        # SavedModel(model='rain_princess.pth'),
+        # DownloadImage(image='luigi.jpg'),
+        # DownloadModel(model='rain_princess.pth'),
+        Stylize(image=args.image,model=args.model)
+    ], local_scheduler=True)

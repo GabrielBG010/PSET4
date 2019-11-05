@@ -3,7 +3,7 @@ import argparse
 
 import luigi
 
-from pset_4.tasks.stylize import Stylize
+from pset_4.cli import main
 
 
 if __name__ == "__main__":
