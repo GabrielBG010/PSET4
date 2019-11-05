@@ -21,9 +21,9 @@ import luigi
 from pset_4.tasks.stylize import Stylize
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument("-i", "--image", default='luigi.jpg' , action="store_true")
-    parser.add_argument("-m", "--model", default='rain_princess.pth')
-    args = parser.parse_args()
+parser.add_argument("-i", "--image", default='luigi.jpg' , action="store_true")
+parser.add_argument("-m", "--model", default='rain_princess.pth')
+args = parser.parse_args()
 
 def main(args=None):
     luigi.build([
