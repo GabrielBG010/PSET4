@@ -61,4 +61,3 @@ class TestS3(TestCase):
         image_out = "luigiout.jpg"
         self.assertEqual(build([Stylize(image=image, model=model)], local_scheduler=True,
                                detailed_summary=True).status, LuigiStatusCode.SUCCESS)
-        assert assert_and_delete(os.path.join("images_out", image_out))
